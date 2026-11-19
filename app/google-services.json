@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "372936629718",
+    "project_id": "wikimapscards",
+    "storage_bucket": "wikimapscards.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:372936629718:android:c70809c9f8a68c13a6d877",
+        "android_client_info": {
+          "package_name": "com.thaosamyn.wikimapscards"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD2JEZeO_gTCxPmYVyjHDV4dDJ55O18d7c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:372936629718:android:b7919851a758e259a6d877",
+        "android_client_info": {
+          "package_name": "fr.esaip.brouillonauth"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD2JEZeO_gTCxPmYVyjHDV4dDJ55O18d7c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
