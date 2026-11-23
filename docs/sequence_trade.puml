@@ -1,0 +1,35 @@
+@startuml
+autonumber
+actor "Player A" as A
+actor "Player B" as B
+participant "TradeRepository" as TR
+database "Firestore" as FS
+participant "CardRepository" as REPO
+database "SQLite" as DB
+
+A -> TR : propose(friendCode, offeredCard, requestedCard)
+TR -> FS : add trades/{id}\nstatus = PENDING, createdAt
+FS --> B : snapshot listener (toUid = B, PENDING)
+B -> TR : respond(tradeId, accept)
+
+alt refused
+  TR -> FS : status = REFUSED, respondedAt
+else accepted
+  TR -> FS : runTransaction
+  activate FS
+  FS -> FS : read trade, check PENDING
+  FS -> FS : read A.offeredCard and B.requestedCard\ncheck count > 1 (duplicates only)
+  alt check failed
+    FS --> TR : abort, nothing written
+    TR --> B : trade no longer valid
+  else check passed
+    FS -> FS : A.offered.count -1, B.offered.count +1\nB.requested.count -1, A.requested.count +1
+    FS -> FS : status = ACCEPTED, respondedAt
+    FS --> TR : commit
+  end
+  deactivate FS
+end
+
+FS --> REPO : listener users/{uid}/cards (A and B)
+REPO -> DB : sync user_card
+@enduml

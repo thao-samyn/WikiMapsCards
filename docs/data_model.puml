@@ -1,0 +1,77 @@
+@startuml
+skinparam classAttributeIconSize 0
+hide empty methods
+
+enum Rarity {
+  COMMON
+  UNCOMMON
+  RARE
+  LEGENDARY
+}
+
+enum ContextCategory {
+  PERSON
+  EVENT
+  WORK
+}
+
+enum TradeStatus {
+  PENDING
+  ACCEPTED
+  REFUSED
+  CANCELLED
+}
+
+class User <<Firestore>> {
+  - uid : String
+  - username : String
+  - email : String
+  - friendCode : String
+  - createdAt : long
+}
+
+abstract class Card <<SQLite>> {
+  - pageId : long
+  - title : String
+  - rarity : Rarity
+  - views30d : long
+  - thumbnail : String
+}
+
+class PlaceCard {
+  - lat : double
+  - lon : double
+}
+
+class ContextCard {
+  - category : ContextCategory
+}
+
+class UserCard <<SQLite + Firestore>> {
+  - count : int
+  - unlockedAt : long
+}
+
+class Trade <<Firestore>> {
+  - tradeId : String
+  - status : TradeStatus
+  - createdAt : long
+  - respondedAt : long
+}
+
+Card <|-- PlaceCard
+Card <|-- ContextCard
+
+User "1" -- "0..*" UserCard : owns >
+UserCard "0..*" -- "1" Card : refers to >
+UserCard "0..*" -- "0..1" PlaceCard : unlockedFrom >
+
+Trade "0..*" -- "1" User : from >
+Trade "0..*" -- "1" User : to >
+Trade "0..*" -- "1" Card : offeredCard >
+Trade "0..*" -- "1" Card : requestedCard >
+
+Card ..> Rarity
+ContextCard ..> ContextCategory
+Trade ..> TradeStatus
+@enduml

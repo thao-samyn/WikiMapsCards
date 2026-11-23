@@ -1,0 +1,46 @@
+@startuml
+autonumber
+actor "End user" as U
+participant "MapFragment" as UI
+participant "LocationHelper" as LOC
+participant "GPS" as GPS
+participant "CaptureService" as CS
+participant "Wikimedia API" as WIKI
+participant "Wikidata API" as WD
+participant "CardRepository" as REPO
+database "SQLite" as DB
+database "Firestore" as FS
+
+U -> UI : tap a nearby place
+UI -> LOC : getCurrent()
+LOC -> GPS : current location
+GPS --> LOC : lat, lon
+LOC --> UI : lat, lon
+UI -> UI : GeoUtils.distanceMeters(user, place)
+
+alt distance > 50 m
+  UI --> U : "Too far"
+else distance <= 50 m
+  UI -> CS : capture(place)
+  CS -> REPO : isOwned(place.pageId)
+  REPO -> DB : SELECT user_card
+  DB --> REPO : result
+  alt already captured
+    CS --> UI : already captured
+    UI --> U : message
+  else new place
+    CS -> WIKI : action=parse&prop=links&section=0
+    WIKI --> CS : intro links
+    CS -> WIKI : prop=pageprops|pageviews
+    WIKI --> CS : Wikidata ids + 30-day views
+    CS -> WD : wbgetentities (P31)
+    WD --> CS : instance-of claims
+    CS -> CS : classify (PERSON / EVENT / WORK)\ncompute rarity\nweighted draw (2-3 cards)
+    CS -> REPO : saveCapture(place, contextCards)
+    REPO -> DB : INSERT card + user_card\n(unlocked_from = place.pageId)
+    REPO -> FS : batch write users/{uid}/cards
+    CS --> UI : unlocked cards
+    UI --> U : show new cards
+  end
+end
+@enduml
