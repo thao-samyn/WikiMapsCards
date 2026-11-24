@@ -1,5 +1,6 @@
 package com.thaosamyn.wikimapscards;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -44,6 +45,7 @@ public class LoginActivity extends AppCompatActivity {
                                 mailAffiche = user.getEmail();
                             }
                             Toast.makeText(this, "Compte créé ! (" + mailAffiche + ")", Toast.LENGTH_SHORT).show();
+                            allerVersMain();
                         } else {
                             Exception erreur = task.getException();
                             String message = "Erreur inconnue";
@@ -74,6 +76,7 @@ public class LoginActivity extends AppCompatActivity {
                                 mailAffiche = user.getEmail();
                             }
                             Toast.makeText(this, "Bienvenue " + mailAffiche + " !", Toast.LENGTH_SHORT).show();
+                            allerVersMain();
                         } else {
                             Exception erreur = task.getException();
                             if (erreur instanceof FirebaseAuthInvalidCredentialsException) {
@@ -84,5 +87,20 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     });
         });
+    }
+
+    //Session en cours pas besoin de se login
+    //@Override
+    //protected void onStart() {
+    //    super.onStart();
+    //    if (mAuth.getCurrentUser() != null) {
+    //        allerVersMain();
+    //    }
+    //}
+
+    private void allerVersMain() {
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 }
