@@ -1,0 +1,40 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "End user" as U
+actor "GPS" as GPS <<system>>
+actor "Wikimedia API" as WIKI <<system>>
+actor "Firebase" as FB <<system>>
+
+rectangle WikiMapsCards {
+  usecase "Unlock context cards" as CTX
+  usecase "Capture a place" as CAP
+  usecase "Access the map" as MAP
+  usecase "View my cards" as COL
+  usecase "Trade cards" as TRD
+  usecase "Respond to a trade" as REP
+  usecase "Sign in" as AUTH
+  usecase "Edit account details" as ACC
+}
+
+U --> MAP
+U --> COL
+U --> REP
+U --> AUTH
+U --> ACC
+
+CAP .> MAP : <<extend>>
+CAP .> CTX : <<include>>
+TRD .> COL : <<extend>>
+
+MAP -- GPS
+CAP -- GPS
+MAP -- WIKI
+CTX -- WIKI
+TRD -- FB
+REP -- FB
+AUTH -- FB
+ACC -- FB
+COL -- FB
+@enduml
