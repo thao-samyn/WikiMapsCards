@@ -11,6 +11,7 @@
 
     <!--- Map string -->
     <string name="hello_map_fragment">Test map fragment</string>
+    <string name="location_permission_denied">Precise location is required to find nearby places</string>
 
 
     <!---   Collection strings -->
