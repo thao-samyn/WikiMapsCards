@@ -1,6 +1,24 @@
 <resources>
+
     <string name="app_name">WikiMapsCards</string>
+
+    <!---Navigation strings -->
+
     <string name="nav_map">Map</string>
     <string name="nav_collection">Collection</string>
     <string name="nav_trades">Trade</string>
+
+
+    <!--- Map string -->
+    <string name="hello_map_fragment">Test map fragment</string>
+
+
+    <!---   Collection strings -->
+    <string name="hello_collection_fragment">Test collection fragment</string>
+
+
+    <!--- Trade string -->
+    <string name="hello_trade_fragment">Test trade fragment</string>
+
+
 </resources>
