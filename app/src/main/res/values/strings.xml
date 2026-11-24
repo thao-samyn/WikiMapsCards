@@ -7,7 +7,7 @@
     <string name="nav_map">Map</string>
     <string name="nav_collection">Collection</string>
     <string name="nav_trades">Trade</string>
-
+    <string name="nav_account">Compte</string>
 
     <!--- Map string -->
     <string name="hello_map_fragment">Test map fragment</string>

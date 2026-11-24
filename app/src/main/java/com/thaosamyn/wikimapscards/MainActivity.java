@@ -10,6 +10,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import com.thaosamyn.wikimapscards.ui.account.AccountFragment;
 import com.thaosamyn.wikimapscards.ui.collection.CollectionFragment;
 import com.thaosamyn.wikimapscards.ui.map.MapFragment;
 import com.thaosamyn.wikimapscards.ui.trade.TradesFragment;
@@ -37,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
                 showFragment(new CollectionFragment());
             } else if (id == R.id.nav_trades) {
                 showFragment(new TradesFragment());
+            } else if (id == R.id.nav_account) {
+                showFragment(new AccountFragment());
             } else {
                 return false;
             }
