@@ -1,4 +1,65 @@
-package com.thaosamyn.wikimapscards;
+package com.thaosamyn.wikimapscards.wiki;
+
+import android.content.Context;
+import android.net.Uri;
+import android.util.Log;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import java.util.Collections;
+import java.util.Map;
 
 public class WikiGeoClient {
+
+    private static final String TAG = "WikiGeoClient";
+    private static final String API_URL = "https://fr.wikipedia.org/w/api.php";
+    private static final String USER_AGENT = "WikiMapsCards/1.0 (projet étudiant Android)";
+    private static final int RADIUS_M = 10000;
+    private static final int LIMIT = 50;
+
+    private final RequestQueue queue;
+
+    public WikiGeoClient(Context context) {
+        // Contexte Application : évite de garder une référence vers l'Activity (fuite mémoire)
+        queue = Volley.newRequestQueue(context.getApplicationContext());
+    }
+
+    public void fetchNearby(double lat, double lon) {
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, buildNearbyUrl(lat, lon), null,
+                response -> Log.d(TAG, response.toString()),
+                error -> Log.e(TAG, "Erreur geosearch : " + error)) {
+            @Override
+            public Map<String, String> getHeaders() {
+                return Collections.singletonMap("User-Agent", USER_AGENT);
+            }
+        };
+        request.setTag(TAG);
+        queue.add(request);
+    }
+
+    /** Annule les requêtes en cours (à appeler quand l'écran n'est plus visible). */
+    public void cancelAll() {
+        queue.cancelAll(TAG);
+    }
+
+    private String buildNearbyUrl(double lat, double lon) {
+        return Uri.parse(API_URL).buildUpon()
+                .appendQueryParameter("action", "query")
+                .appendQueryParameter("format", "json")
+                .appendQueryParameter("formatversion", "2")
+                .appendQueryParameter("generator", "geosearch")
+                .appendQueryParameter("ggscoord", lat + "|" + lon)
+                .appendQueryParameter("ggsradius", String.valueOf(RADIUS_M))
+                .appendQueryParameter("ggslimit", String.valueOf(LIMIT))
+                .appendQueryParameter("prop", "coordinates|pageimages|description")
+                .appendQueryParameter("colimit", "max")
+                .appendQueryParameter("piprop", "thumbnail")
+                .appendQueryParameter("pithumbsize", "200")
+                .appendQueryParameter("pilimit", String.valueOf(LIMIT))
+                .build()
+                .toString();
+    }
 }
