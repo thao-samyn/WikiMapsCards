@@ -9,7 +9,10 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import com.thaosamyn.wikimapscards.model.WikiPlace;
+
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 public class WikiGeoClient {
@@ -17,20 +20,29 @@ public class WikiGeoClient {
     private static final String TAG = "WikiGeoClient";
     private static final String API_URL = "https://fr.wikipedia.org/w/api.php";
     private static final String USER_AGENT = "WikiMapsCards/1.0 (projet étudiant Android)";
-    private static final int RADIUS_M = 10000;
+    private static final int RADIUS_M = 2000;
     private static final int LIMIT = 50;
-
     private final RequestQueue queue;
+    private final Listener listener;
 
-    public WikiGeoClient(Context context) {
+    public interface Listener {
+        void onPlaces(List<WikiPlace> places);
+        void onError(String message);
+    }
+
+    public WikiGeoClient(Context context, Listener listener) {
+        this.listener = listener;
         // Contexte Application : évite de garder une référence vers l'Activity (fuite mémoire)
         queue = Volley.newRequestQueue(context.getApplicationContext());
     }
 
     public void fetchNearby(double lat, double lon) {
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, buildNearbyUrl(lat, lon), null,
-                response -> Log.d(TAG, response.toString()),
-                error -> Log.e(TAG, "Erreur geosearch : " + error)) {
+                response -> listener.onPlaces(WikiGeoParser.parse(response)),
+                error -> {
+                    Log.e(TAG, "Erreur geosearch : " + error);
+                    listener.onError(error.toString());
+                }) {
             @Override
             public Map<String, String> getHeaders() {
                 return Collections.singletonMap("User-Agent", USER_AGENT);

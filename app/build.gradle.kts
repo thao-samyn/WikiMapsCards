@@ -40,6 +40,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    // Les méthodes Android (Log...) renvoient une valeur par défaut au lieu de planter dans les tests JVM
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -52,6 +56,7 @@ dependencies {
     implementation(libs.play.services.location)
     implementation(libs.play.services.maps)
     testImplementation(libs.junit)
+    testImplementation(libs.json)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.ext.junit)
 }

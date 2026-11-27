@@ -5,11 +5,11 @@ public final class WikiPlace {
     private final int pageId;
     private final String title;
     private final String description;
-    private final double lon;
     private final double lat;
+    private final double lon;
     private final String thumbnailUrl;
 
-    public WikiPlace(int pageId, String title, String description, double lon, double lat, String thumbnailUrl) {
+    public WikiPlace(int pageId, String title, String description, double lat, double lon, String thumbnailUrl) {
         this.pageId = pageId;
         this.title = title;
         this.description = description;
