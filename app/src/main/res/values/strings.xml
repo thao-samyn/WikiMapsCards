@@ -11,6 +11,9 @@
 
     <!--- Map string -->
     <string name="hello_map_fragment">Test map fragment</string>
+    <string name="location_permission_denied">Precise location is required to find nearby places</string>
+    <string name="wiki_error">Unable to load nearby Wikipedia places</string>
+    <string name="place_image_description">Picture of the place</string>
 
 
     <!---   Collection strings -->
