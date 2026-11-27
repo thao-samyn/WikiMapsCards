@@ -4,6 +4,7 @@ import android.Manifest;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -22,14 +23,18 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.thaosamyn.wikimapscards.R;
 import com.thaosamyn.wikimapscards.geo.LocationHelper;
+import com.thaosamyn.wikimapscards.model.WikiPlace;
 import com.thaosamyn.wikimapscards.wiki.WikiGeoClient;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 
+import java.util.List;
 import java.util.Map;
 
-public class MapFragment extends Fragment implements OnMapReadyCallback {
+public class MapFragment extends Fragment implements OnMapReadyCallback, WikiGeoClient.Listener{
+
+    private static final String TAG = "MapFragment";
 
     // On ne réinterroge Wikipédia que si le joueur s'est éloigné de plus de 200 m
     private static final float REFRESH_DISTANCE_M = 200f;
@@ -38,6 +43,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private WikiGeoClient wikiClient;
     private LocationHelper locationHelper;
     private Location lastSearchLocation;
+    // Dernière position reçue : affichée dès que la carte est prête si le GPS a répondu avant
+    private Location lastLocation;
     private GoogleMap map;
     private Marker userMarker;
     private Circle userCircle;
@@ -59,7 +66,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
 
         // initialisation des helpers
-        wikiClient = new WikiGeoClient(requireContext());
+        wikiClient = new WikiGeoClient(requireContext(), this);
         locationHelper = new LocationHelper(requireContext(), this::onLocation);
 
 
@@ -112,17 +119,22 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void onLocation(@NonNull Location location) {
+        Log.d(TAG, "Position reçue : " + location.getLatitude() + ", " + location.getLongitude());
+        lastLocation = location;
+
         if (lastSearchLocation == null || location.distanceTo(lastSearchLocation) > REFRESH_DISTANCE_M) {
             lastSearchLocation = location;
             wikiClient.fetchNearby(location.getLatitude(), location.getLongitude());
         }
 
         showUserPosition(location);
+        showPlaces(location);
     }
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
 
+        Log.d(TAG, "Carte prête");
         map = googleMap;
 
         // initialisation du marqueur et la zone utilisateur
@@ -133,6 +145,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         map.getUiSettings().setZoomControlsEnabled(true);
         map.getUiSettings().setCompassEnabled(true);
+
+        // Le GPS a pu répondre avant la carte : on affiche la position déjà connue
+        if (lastLocation != null) {
+            showUserPosition(lastLocation);
+        }
     }
 
     public void showUserPosition(Location location) {
@@ -162,5 +179,21 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             userMarker.setPosition(position);
             userCircle.setCenter(position);
         }
+    }
+
+    public void showPlaces(Location location){
+
+    }
+
+    @Override
+    public void onPlaces(List<WikiPlace> places) {
+        // Temporaire : les marqueurs des lieux viendront ensuite
+        Log.d(TAG, places.size() + " lieux trouvés");
+    }
+
+    @Override
+    public void onError(String message) {
+        Log.e(TAG, "Recherche Wikipédia impossible : " + message);
+        Toast.makeText(requireContext(), R.string.wiki_error, Toast.LENGTH_SHORT).show();
     }
 }

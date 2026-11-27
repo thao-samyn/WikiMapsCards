@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Looper;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -22,6 +23,8 @@ public class LocationHelper {
     public interface Listener {
         void onLocation(@NonNull Location location);
     }
+
+    private static final String TAG = "LocationHelper";
 
     // Toutes les 10 secondes et si on a plus de 10 mètres de différence avec la position d'avant
     private static final long INTERVAL_MS = 10000;
@@ -55,12 +58,14 @@ public class LocationHelper {
     public void start() {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
+            Log.w(TAG, "Permission de position exacte manquante : suivi GPS non démarré");
             return;
         }
         LocationRequest request = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, INTERVAL_MS)
                 .setMinUpdateDistanceMeters(MIN_DISTANCE_M)
                 .build();
         client.requestLocationUpdates(request, callback, Looper.getMainLooper());
+        Log.d(TAG, "Suivi GPS démarré");
     }
 
     /** À appeler dans onPause : le GPS peut s'éteindre. */
