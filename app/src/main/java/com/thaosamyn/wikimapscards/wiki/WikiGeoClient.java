@@ -1,11 +1,14 @@
 package com.thaosamyn.wikimapscards.wiki;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -45,6 +48,20 @@ public class WikiGeoClient {
                 }) {
             @Override
             public Map<String, String> getHeaders() {
+                return Collections.singletonMap("User-Agent", USER_AGENT);
+            }
+        };
+        request.setTag(TAG);
+        queue.add(request);
+    }
+
+    /** Télécharge la miniature d'un lieu ; en cas d'erreur on garde simplement l'image par défaut. */
+    public void fetchThumbnail(String url, Response.Listener<Bitmap> onBitmap) {
+        ImageRequest request = new ImageRequest(url, onBitmap, 0, 0, null, null,
+                error -> Log.e(TAG, "Erreur miniature : " + error)) {
+            @Override
+            public Map<String, String> getHeaders() {
+                // upload.wikimedia.org exige aussi un User-Agent identifiable
                 return Collections.singletonMap("User-Agent", USER_AGENT);
             }
         };
